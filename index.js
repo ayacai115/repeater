@@ -1,6 +1,8 @@
 'use strict';
 
 const Alexa = require('alexa-sdk');
+const welcomePrompt = '倍返しへようこそ。なにか話しかけてくれたら、それを倍にして返します。';
+const reprompt = 'なにか話しかけてくれたら、それを倍にして返します。';
 
 exports.handler = function(event, context, callback) {
     const alexa = Alexa.handler(event, context, callback);
@@ -10,24 +12,15 @@ exports.handler = function(event, context, callback) {
 
 const handlers = {
     'LaunchRequest': function () {
-        const speechOutput = 'リピーターへようこそ。何回繰り返しますか？';
-        const reprompt = '何回繰り返しますか？';
-        this.emit(':ask', speechOutput, reprompt);
+        this.emit(':ask', welcomePrompt, reprompt);
     },
     'SentenceIntent': function () {
-  var intent = this.event.request.intent;
-        var times = intent && intent.slots && intent.slots.times && intent.slots.times.value;
+        var intent = this.event.request.intent;
         var any = intent && intent.slots && intent.slots.any && intent.slots.any.value
-        var times_int = Number(times)
-        if (times == null){
-            this.emit(':tell', '何回かわかりませんでした。');
-        } else {
-            this.emit(':tell', any + 'を' + times + '回ですね。わかりました。' + any.repeat(times_int));
-        }
+        this.emit(':ask', any.repeat(2), reprompt);
     },
     'AMAZON.HelpIntent': function () {
-        const speechOutput = 'リピーターへようこそ。何回繰り返しますか？';
-        this.emit(':ask', speechOutput, speechOutput);
+        this.emit(':ask', welcomePrompt, welcomePrompt);
     },
     'AMAZON.CancelIntent': function () {
         this.emit('AMAZON.StopIntent');
@@ -36,10 +29,7 @@ const handlers = {
         this.emit(':tell', 'ばいばーい');
     },
     'Unhandled': function () {
-        const speechOutput = 'すみません。うまく理解できませんでした。';
-        const reprompt = 'もう一度おっしゃってください。';
+        const speechOutput = 'すみません。うまく理解できませんでした。なにか話しかけてくれたら、それを倍にして返します。';
         this.emit(':ask', speechOutput, reprompt);
     }
 };
-
-
